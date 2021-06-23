@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- create by Miguel Camacho 2021-06-22  -->
+<configuration>
+
+    <!-- Path de directorio para guardar el file -->
+    <property name="USER_HOME" value="/Users/macbook/Desktop" />
+    <!-- Set color output -->
+    <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
+
+    <!-- Definiendo el formato de fecha  -->
+    <appender name = "STDOUT" class = "ch.qos.logback.core.ConsoleAppender">
+        <!-- encoders are  by default assigned the type
+         ch.qos.logback.classic.encoder.PatternLayoutEncoder -->
+        <!-- Set color output -->
+        <withJansi>true</withJansi>
+        <encoder>
+            <pattern>%date %highlight(%-5level) %cyan(%logger{5}@[%-4.30thread]) - %msg%n</pattern>
+            <charset>utf-8</charset>
+        </encoder>
+    </appender>
+
+    <appender name="SIZE_TIME_OUTPUT_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${USER_HOME}/sizeTimeOutputlogFile.log</file>
+        <encoder>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss}] - %msg%n</pattern>
+            <charset>utf-8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${USER_HOME}/logs/archived/sizeTimeOutputlogFile.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- each file should be at most 100MB, keep 3 days worth of history, but at most 3GB -->
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+
+            <!-- keep 3 days' worth of history capped at 3GB total size -->
+            <maxHistory>3</maxHistory>
+            <totalSizeCap>3GB</totalSizeCap>
+        </rollingPolicy>
+
+    </appender>
+
+    <!-- Strictly speaking, the level attribute is not necessary since -->
+    <!-- the level of the root level is set to DEBUG by default.       -->
+    <!--    Loggers setup according to Spring Profile-->
+    <springProfile name="prod">
+    <root level="DEBUG">
+        <appender-ref ref ="SIZE_TIME_OUTPUT_FILE" />
+        <appender-ref ref ="STDOUT" />
+    </root>
+    </springProfile>
+
+</configuration>
